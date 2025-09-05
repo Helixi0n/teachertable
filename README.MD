@@ -28,5 +28,4 @@ python utils.py
 
 ```comandline
 python main.py
-
 ```
