@@ -10,27 +10,27 @@ session = Session()
 
 BaseModel = declarative_base()
 
-class User(BaseModel):
+class User(BaseModel): # База данных учителей
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer)
+    user_id = Column(Integer, default=0)
     teacher = Column(String(100))
     password = Column(Text)
 
-    exam = relationship('Event', back_populates='teacher')
+    event = relationship('Event', back_populates='teacher')
 
 
-class Event(BaseModel):
+class Event(BaseModel): # База данных событий
     __tablename__ = 'event'
 
     event_id = Column(Integer, primary_key=True)
     event = Column(Text)
     date_time = Column(DateTime, default=datetime.now)
 
-    teacher_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    teacher_id = Column(Integer, ForeignKey('user.user_id'), nullable=False)
 
-    teacher = relationship('User', back_populates='exam')
+    teacher = relationship('User', back_populates='event')
 
 def init_db():
     engine = create_engine("sqlite:///data.db")

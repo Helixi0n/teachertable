@@ -1,1 +1,3 @@
 constants.py
+data.db
+__pycache__

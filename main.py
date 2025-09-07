@@ -2,6 +2,8 @@ from telebot import TeleBot
 from controllers import Controller
 from constants import TOKEN
 
+# Главный файл, запустит для начала работы бота
+
 bot = TeleBot(TOKEN)
 controller = Controller(bot)
 
