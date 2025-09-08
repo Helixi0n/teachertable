@@ -25,7 +25,7 @@ class Event(BaseModel): # База данных событий
     __tablename__ = 'event'
 
     event_id = Column(Integer, primary_key=True)
-    event = Column(Text)
+    text = Column(Text)
     date_time = Column(DateTime, default=datetime.now)
 
     teacher_id = Column(Integer, ForeignKey('user.user_id'), nullable=False)
