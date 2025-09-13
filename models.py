@@ -6,8 +6,8 @@ session = get_connection()
 
 class Model:
     @staticmethod
-    def add_teacher(teacher_name, password):
-        teacher = User(teacher=teacher_name, password=password)
+    def add_teacher(teacher_name):
+        teacher = User(teacher=teacher_name)
         session.add(teacher)
         session.commit()
         session.close() # Добавление учителя в сисему
@@ -21,17 +21,12 @@ class Model:
         session.close() # Удаление учителя из системы
 
     @staticmethod
-    def sign_in(teacher_id, password, user_id): # Вход
+    def sign_in(teacher_id, user_id): # Вход
         teacher = session.query(User).filter(User.id == teacher_id).first()
-
-        if teacher.password != password:
-            return False # Вывод: неправильный пароль
-        else:
-            stmt = update(User).where(User.id == teacher_id).values(user_id=user_id)
-            session.execute(stmt)
-            session.commit()
-            session.close()
-            return True # Успешный вход
+        stmt = update(User).where(User.id == teacher_id).values(user_id=user_id)
+        session.execute(stmt)
+        session.commit()
+        session.close()
         
     @staticmethod
     def sign_out(user_id):
@@ -41,25 +36,12 @@ class Model:
         session.close() # Выход из системы в главное меню
 
     @staticmethod
-    def change_password(user_id, new_password):
-        user = session.query(User).filter(User.user_id == user_id).first()
-
-        if user.password == new_password:
-            return False # Пароль совпадает со старым
-        else:
-            stmt = update(User).where(User.user_id == user_id).values(password=new_password)
-            session.execute(stmt)
-            session.commit()
-            session.close()
-            return True # Смена пароля
-
-    @staticmethod
     def get_not_signed_in_teacher_list():
         teacher_list = session.query(User).filter(User.user_id == 0).all()
-        user = []
+        user = {}
 
         for teacher in teacher_list:
-            user.append((teacher.id, teacher.teacher))
+            user[teacher.id] = teacher.teacher
 
         return user # Вывод списка учителей для входа
     

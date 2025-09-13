@@ -1,6 +1,7 @@
 from telebot import types, TeleBot
 from models import Model
-from notifications import Notification
+
+user_states = {}
 
 class Controller:
     def __init__(self, bot):

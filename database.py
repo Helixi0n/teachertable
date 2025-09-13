@@ -16,7 +16,6 @@ class User(BaseModel): # База данных учителей
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, default=0)
     teacher = Column(String(100))
-    password = Column(Text)
 
     event = relationship('Event', back_populates='teacher')
 
