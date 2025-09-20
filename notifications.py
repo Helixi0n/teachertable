@@ -7,9 +7,7 @@ class Notification:
     def __init__(self, bot):
         self.bot: TeleBot = bot
 
-    def notifications(self):
-        @staticmethod
-        def send_news(text):
+    def send_news(self, text):
             teacher_list = session.query(User).all()
             id_list = []
 
@@ -18,13 +16,21 @@ class Notification:
 
             for id in id_list:
                 self.bot.send_message(id, 
-                                      f'''У вас новая новость:\n
-                                      {text}''')
+                    f'''У вас новая новость:\n
+                    {text}'''
+                )
+
+    def notifications(self):  
+        @staticmethod
+        def notification_now(self):
+            pass
                 
         @staticmethod
-        def reminder_week():
+        def reminder_week(self):
             pass
 
         @staticmethod
-        def reminder_day():
+        def reminder_day(self):
             pass
+
+    

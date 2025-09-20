@@ -4,10 +4,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
 engine = create_engine('sqlite:///data.db')
-
 Session = sessionmaker(bind=engine)
 session = Session()
-
 BaseModel = declarative_base()
 
 class User(BaseModel): # База данных учителей
@@ -20,16 +18,25 @@ class User(BaseModel): # База данных учителей
     event = relationship('Event', back_populates='teacher')
 
 
+class Admin(BaseModel): # База данных админов
+    __tablename__ = 'admin'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, default=0)
+
+
 class Event(BaseModel): # База данных событий
     __tablename__ = 'event'
 
     event_id = Column(Integer, primary_key=True)
     text = Column(Text)
-    date_time = Column(DateTime, default=datetime.now)
+    date_time_event = Column(DateTime)
+    date_time_add = Column(DateTime, default=datetime.now)
 
     teacher_id = Column(Integer, ForeignKey('user.user_id'), nullable=False)
 
     teacher = relationship('User', back_populates='event')
+
 
 def init_db():
     engine = create_engine("sqlite:///data.db")
