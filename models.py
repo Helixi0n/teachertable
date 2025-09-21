@@ -76,30 +76,47 @@ class Model:
         for teacher in teacher_list:
             user[teacher.id] = teacher.teacher
 
-        return user # Вывод списка учителей для входа
+        if user:
+            return user # Вывод списка учителей для входа
+        else:
+            return False
     
     @staticmethod
     def get_signed_in_teacher_list():
         teacher_list = session.query(User).filter(User.user_id != 0).all()
-        user = {}
 
-        for teacher in teacher_list:
-            user[teacher.id] = teacher.teacher
-
-        return user # Вывод списка вошедших учителей
+        if teacher_list:
+            return teacher_list # Вывод списка вошедших учителей
+        else:
+            return False # Нет авторизованных учителей
     
     @staticmethod
-    def add_event(text, date_time, teacher_id):
-        teacher = session.query(User).filter(User.id == teacher_id).first()
-        if teacher is None:
-            return False # Вывод: учитель не в системе
+    def format_datetime_check(date_time):
+        format = 'YYYY-MM-DD HH:MM:SS'
+        try:
+            datetime.strptime(date_time, format)
+            return True # Верный формат
         
-        event = Event(text = text, date_time = date_time, teacher_id = teacher.user_id)
-        session.execute(event)
-        session.commit()
-        session.close()
-        return True # Событие добавлено
+        except ValueError:
+            return False # Неверный формат
     
+    @staticmethod
+    def add_event(text, date_time, teacher_name):
+        if teacher_name != 'Для всех':
+            teacher = session.query(User).filter(User.teacher == teacher_name).first()
+            event = Event(text = text, date_time = date_time, teacher_id = teacher.user_id)
+            session.execute(event)
+            session.commit()
+            session.close()
+            
+        elif teacher_name == 'Для всех':
+            teacher_list = session.query(User).all()
+            for teacher in teacher_list:
+                event = Event(text = text, date_time = date_time, teacher_id = teacher.user_id)
+                session.execute(event)
+            session.commit()
+            session.close()
+        
     @staticmethod
     def delete_event(event_id):
         session.query(Event).filter(Event.event_id == event_id).delete() 

@@ -8,14 +8,15 @@ class Notification:
         self.bot: TeleBot = bot
 
     def send_news(self, text):
-            teacher_list = session.query(User).all()
+            teacher_list = session.query(User).filter(User.user_id != 0).all()
             id_list = []
 
             for teacher in teacher_list:
                 id_list.append(teacher.user_id)
 
             for id in id_list:
-                self.bot.send_message(id, 
+                self.bot.send_message(
+                    id, 
                     f'''У вас новая новость:\n
                     {text}'''
                 )
