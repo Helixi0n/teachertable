@@ -22,7 +22,7 @@ class Model:
         session.close() # Удаление учителя из системы
 
     @staticmethod
-    def sign_in(teacher_name, user_id): # Вход
+    def sign_in_teacher(teacher_name, user_id): # Вход
         stmt = update(User).where(User.teacher == teacher_name).values(user_id=user_id)
         session.execute(stmt)
         session.commit()
@@ -36,7 +36,7 @@ class Model:
         session.close() # Вход в качестве администратора
         
     @staticmethod
-    def sign_out(user_id):
+    def sign_out_teacher(user_id):
         stmt = update(User).where(User.user_id == user_id).values(user_id=0)
         session.execute(stmt)
         session.commit()
@@ -71,10 +71,10 @@ class Model:
     @staticmethod
     def get_not_signed_in_teacher_list():
         teacher_list = session.query(User).filter(User.user_id == 0).all()
-        user = {}
+        user = []
 
         for teacher in teacher_list:
-            user[teacher.id] = teacher.teacher
+            user = teacher.teacher
 
         if user:
             return user # Вывод списка учителей для входа
@@ -101,10 +101,10 @@ class Model:
             return False # Неверный формат
     
     @staticmethod
-    def add_event(text, date_time, teacher_name):
+    def add_event(text, date_time, teacher_name, admin_id):
         if teacher_name != 'Для всех':
             teacher = session.query(User).filter(User.teacher == teacher_name).first()
-            event = Event(text = text, date_time = date_time, teacher_id = teacher.user_id)
+            event = Event(text = text, date_time = date_time, teacher_id = teacher.user_id, admin_id=admin_id)
             session.execute(event)
             session.commit()
             session.close()
@@ -112,7 +112,7 @@ class Model:
         elif teacher_name == 'Для всех':
             teacher_list = session.query(User).all()
             for teacher in teacher_list:
-                event = Event(text = text, date_time = date_time, teacher_id = teacher.user_id)
+                event = Event(text = text, date_time = date_time, teacher_id = teacher.user_id, admin_id= admin_id)
                 session.execute(event)
             session.commit()
             session.close()
@@ -130,7 +130,7 @@ class Model:
 
         for event in event_list:
             if event.date_time > datetime.now():
-                events.append((event.text, event.date_time))
+                events.append((event.text, event.date_time_event))
 
         if events:
             return events # События найдены
@@ -144,7 +144,7 @@ class Model:
 
         for event in event_list:
             if event.date_time <= datetime.now():
-                events.append((event.text, event.date_time))
+                events.append((event.text, event.date_time_event))
 
         if events:
             return events # События найдены

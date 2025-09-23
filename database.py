@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Table, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
@@ -32,8 +32,10 @@ class Event(BaseModel): # База данных событий
     text = Column(Text)
     date_time_event = Column(DateTime)
     date_time_add = Column(DateTime, default=datetime.now)
+    presence = Column(Boolean, default=True)
 
     teacher_id = Column(Integer, ForeignKey('user.user_id'), nullable=False)
+    admin_id = Column(Integer, ForeignKey('admin.user_id'), nullable=False)
 
     teacher = relationship('User', back_populates='event')
 
