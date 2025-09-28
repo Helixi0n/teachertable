@@ -33,6 +33,7 @@ class Event(BaseModel): # База данных событий
     date_time_event = Column(DateTime)
     date_time_add = Column(DateTime, default=datetime.now)
     presence = Column(Boolean, default=True)
+    reason = Column(Text, default=None)
 
     teacher_id = Column(Integer, ForeignKey('user.user_id'), nullable=False)
     admin_id = Column(Integer, ForeignKey('admin.user_id'), nullable=False)

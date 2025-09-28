@@ -384,3 +384,27 @@ class Controller:
                     'Вы не являетесь учителем',
                     reply_markup=keyboard
                 )
+
+        @self.bot.callback_query_handler(func=lambda callback: (callback.data.startswith('True') or callback.data.startswith('False')) and Model.is_it_teacher(callback.message.chat.id) == True)
+        def presence_true(callback):
+            if callback.data.startswith('True'):
+                event_id = callback.data.strip('True_')
+                Model.presence(event_id, callback.message.chat.id, True)
+
+                keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+                keyboard.add(types.KeyboardButton('Назад'))
+
+                self.bot.send_message(
+                    callback.message.chat.id,
+                    f'Отлично',
+                    reply_markup=keyboard
+                )
+            
+            else:
+                event_id = callback.data.strip('False_')
+                Model.presence(event_id, callback.message.chat.id, False)
+
+                self.bot.send_message(
+                    callback.message.chat.id,
+                    f'Очень жаль. Назовите причину'
+                )

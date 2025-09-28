@@ -129,7 +129,7 @@ class Model:
         events = []
 
         for event in event_list:
-            if event.date_time > datetime.now():
+            if event.date_time_event > datetime.now():
                 events.append((event.text, event.date_time_event))
 
         if events:
@@ -143,10 +143,24 @@ class Model:
         events = []
 
         for event in event_list:
-            if event.date_time <= datetime.now():
+            if event.date_time_event <= datetime.now():
                 events.append((event.text, event.date_time_event))
 
         if events:
             return events # События найдены
         else:
             return False # Нет завершенных событий
+        
+    @staticmethod
+    def presence(event_id, teacher_id, bool):
+        stmt = update(Event).where(Event.event_id == event_id).values(presence = bool)
+        session.execute(stmt)
+        session.commit()
+        session.close()
+
+    @staticmethod
+    def get_reason(teacher_id, text):
+        stmt = update(Event).where(Event.teacher_id == teacher_id).values(reason = text)
+        session.execute(stmt)
+        session.commit()
+        session.close()
