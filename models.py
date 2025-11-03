@@ -15,12 +15,25 @@ class Model:
 
     @staticmethod
     def delete_teacher(teacher_id):
-        session.query(User).filter(User.id == teacher_id).delete()
         teacher = session.query(User).filter(User.id == teacher_id).first()
+        if not teacher:
+            return False
+        session.query(User).filter(User.id == teacher_id).delete()
         session.query(Event).filter(Event.teacher_id == teacher.id).delete() 
         session.commit()
-        session.close() # Удаление учителя из системы
+        session.close() 
+        return True # Удаление учителя из системы
 
+    @staticmethod
+    def get_teacher(teacher_id):
+        teacher = session.query(User).filter(User.id == teacher_id).first()
+        return teacher.teacher # Поиск учителя
+    
+    @staticmethod
+    def get_teacher_by_name(teacher):
+        teacher = session.query(User).filter(User.teacher == teacher).first()
+        return teacher.id # Поиск учителя
+    
     @staticmethod
     def sign_in_teacher(teacher_name, user_id): # Вход
         stmt = update(User).where(User.teacher == teacher_name).values(user_id=user_id)
@@ -37,21 +50,20 @@ class Model:
         
     @staticmethod
     def sign_out_teacher(user_id):
-        stmt = update(User).where(User.user_id == user_id).values(user_id=0)
+        stmt = update(User).where(User.user_id == user_id).values(user_id = 0)
         session.execute(stmt)
         session.commit()
         session.close() # Выход из системы в главное меню
 
     @staticmethod
     def sign_out_admin(user_id):
-        stmt = update(Admin).where(User.user_id == user_id).values(user_id=0)
-        session.execute(stmt)
+        session.query(Admin).filter(Admin.user_id == user_id).delete()
         session.commit()
         session.close() # Выход из системы в главное меню
 
     @staticmethod
     def is_it_teacher(user_id):
-        user = session.query(User).where(user_id == user_id).first()
+        user = session.query(User).where(User.user_id == user_id).first()
         
         if user:
             return True # Пользователь - учитель
@@ -61,7 +73,7 @@ class Model:
 
     @staticmethod
     def is_it_admin(user_id):
-        user = session.query(Admin).where(user_id == user_id).first()
+        user = session.query(Admin).where(Admin.user_id == user_id).first()
 
         if user:
             return True # Пользователь - админ
@@ -70,16 +82,16 @@ class Model:
 
     @staticmethod
     def get_not_signed_in_teacher_list():
-        teacher_list = session.query(User).filter(User.user_id == 0).all()
+        teacher_list = session.query(User).filter(User.user_id == 0)
         user = []
 
         for teacher in teacher_list:
-            user = teacher.teacher
+            user.append(teacher.teacher)
 
         if user:
             return user # Вывод списка учителей для входа
         else:
-            return False
+            return False # Нет профилей для входа
     
     @staticmethod
     def get_signed_in_teacher_list():
@@ -92,30 +104,38 @@ class Model:
     
     @staticmethod
     def format_datetime_check(date_time):
-        format = 'YYYY-MM-DD HH:MM:SS'
+        
+        format = '%Y-%m-%d %H:%M:%S'
         try:
-            datetime.strptime(date_time, format)
-            return True # Верный формат
+            
+            parsed_datetime = datetime.strptime(date_time, format)
+            return True  # Верный формат
         
         except ValueError:
-            return False # Неверный формат
-    
+            return False  # Неверный формат
+
     @staticmethod
-    def add_event(text, date_time, teacher_name, admin_id):
+    def add_event(text, date_time_str, teacher_name, admin_id):
+        
+        format = '%Y-%m-%d %H:%M:%S'
+        date_time = datetime.strptime(date_time_str, format)
+        
         if teacher_name != 'Для всех':
             teacher = session.query(User).filter(User.teacher == teacher_name).first()
-            event = Event(text = text, date_time = date_time, teacher_id = teacher.user_id, admin_id=admin_id)
-            session.execute(event)
-            session.commit()
-            session.close()
-            
+
+            if teacher:
+                event = Event(text=text, date_time_event=date_time, teacher_id=teacher.user_id, admin_id=admin_id)
+                session.add(event)
+                session.commit()
+                
         elif teacher_name == 'Для всех':
-            teacher_list = session.query(User).all()
+            teacher_list = session.query(User).filter(User.user_id != 0).all()
             for teacher in teacher_list:
-                event = Event(text = text, date_time = date_time, teacher_id = teacher.user_id, admin_id= admin_id)
-                session.execute(event)
+                event = Event(text=text, date_time_event=date_time, teacher_id=teacher.user_id, admin_id=admin_id)
+                session.add(event)
             session.commit()
-            session.close()
+        
+        session.close()
         
     @staticmethod
     def delete_event(event_id):
@@ -152,15 +172,20 @@ class Model:
             return False # Нет завершенных событий
         
     @staticmethod
-    def presence(event_id, teacher_id, bool):
+    def presence(event_id, bool):
         stmt = update(Event).where(Event.event_id == event_id).values(presence = bool)
         session.execute(stmt)
         session.commit()
-        session.close()
+        session.close() # Добавляет присутствие
 
     @staticmethod
-    def get_reason(teacher_id, text):
-        stmt = update(Event).where(Event.teacher_id == teacher_id).values(reason = text)
+    def get_reason(event_id, text):
+        stmt = update(Event).where(Event.event_id == event_id).values(reason = text)
         session.execute(stmt)
         session.commit()
-        session.close()
+        session.close() # Причина отсутствия
+
+    @staticmethod
+    def get_event(event_id):
+        event = session.query(Event).filter(Event.id == event_id).first()
+        return (event.admin_id, event.text, event.reason) # Сведения о событии

@@ -19,8 +19,7 @@ class Notification:
             for id in id_list:
                 self.bot.send_message(
                     id, 
-                    f'''У вас новая новость:\n
-                    {text}'''
+                    f'''У вас новая новость:\n{text}'''
                 )
 
 
