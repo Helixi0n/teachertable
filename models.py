@@ -104,10 +104,9 @@ class Model:
     
     @staticmethod
     def format_datetime_check(date_time):
-        
-        format = '%Y-%m-%d %H:%M:%S'
+        format = '%d.%m.%Y %H:%M'
+
         try:
-            
             parsed_datetime = datetime.strptime(date_time, format)
             return True  # Верный формат
         
@@ -117,7 +116,7 @@ class Model:
     @staticmethod
     def add_event(text, date_time_str, teacher_name, admin_id):
         
-        format = '%Y-%m-%d %H:%M:%S'
+        format = '%d.%m.%Y %H:%M'
         date_time = datetime.strptime(date_time_str, format)
         
         if teacher_name != 'Для всех':

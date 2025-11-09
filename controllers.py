@@ -310,7 +310,7 @@ class Controller:
                 admin_list[message.chat.id].append(message.text)
                 self.bot.send_message(
                     message.chat.id,
-                    'Напишите дату в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС',
+                    'Напишите дату в формате "ДД.ММ.ГГГГ ЧЧ:ММ"',
                     reply_markup=keyboard
                 )
             else:
@@ -363,8 +363,6 @@ class Controller:
                 'Событие добавлено',
                 reply_markup=keyboard
             )
-
-            Notification.add_event_notification(self=self, teacher_id=Model.get_teacher_by_name(teacher), text=text, date_time=date_time)
 
         @self.bot.message_handler(func=lambda message: message.text == 'Выйти из профиля администратора')
         def sign_out_admin(message):

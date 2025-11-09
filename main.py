@@ -14,5 +14,9 @@ controller.register_handlers()
 
 if __name__ == "__main__":
     print("Bot is running...")
-    bot.polling()
-    threading.Thread(target=notification.reminder()).start()
+
+    reminder_thread = threading.Thread(target=notification.reminder)
+    reminder_thread.daemon = True
+    reminder_thread.start()
+
+    bot.polling(none_stop=True)
