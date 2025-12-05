@@ -422,7 +422,7 @@ class Controller:
 
         @self.bot.message_handler(func=lambda message: teacher_states.get(message.chat.id) == SIGN_IN_TEACHER and message.text != 'Назад')
         def teacher(message):
-            if Model.is_teacher_signed_in == False:
+            if Model.is_teacher_signed_in(message.text) == False:
                 Model.sign_in_teacher(message.text, message.chat.id)
                 if  message.chat.id in teacher_states.keys():
                     del teacher_states[message.chat.id]
