@@ -364,6 +364,12 @@ class Controller:
                 reply_markup=keyboard
             )
 
+            self.bot.send_message(
+                Model.get_teacher_by_name(teacher),
+                f'Вам было назначено событие {text}.\nДата и время: {date_time}',
+                reply_markup=keyboard
+            )
+
         @self.bot.message_handler(func=lambda message: message.text == 'Выйти из профиля администратора')
         def sign_out_admin(message):
             if message.chat.id in admin_list.keys():
