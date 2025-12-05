@@ -422,23 +422,34 @@ class Controller:
 
         @self.bot.message_handler(func=lambda message: teacher_states.get(message.chat.id) == SIGN_IN_TEACHER and message.text != 'Назад')
         def teacher(message):
-            Model.sign_in_teacher(message.text, message.chat.id)
-            if  message.chat.id in teacher_states.keys():
-                del teacher_states[message.chat.id]
+            if Model.is_teacher_signed_in == False:
+                Model.sign_in_teacher(message.text, message.chat.id)
+                if  message.chat.id in teacher_states.keys():
+                    del teacher_states[message.chat.id]
 
-            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-            buttons = [
-                types.KeyboardButton('Предстоящие события'),
-                types.KeyboardButton('Прошедшие события'),
-                types.KeyboardButton('Выйти из профиля учителя')
-            ]
-            keyboard.add(*buttons)
+                keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+                buttons = [
+                    types.KeyboardButton('Предстоящие события'),
+                    types.KeyboardButton('Прошедшие события'),
+                    types.KeyboardButton('Выйти из профиля учителя')
+                ]
+                keyboard.add(*buttons)
 
-            self.bot.send_message(
-                message.chat.id,
-                'Выберите дейстивие',
-                reply_markup=keyboard
-            )
+                self.bot.send_message(
+                    message.chat.id,
+                    'Выберите дейстивие',
+                    reply_markup=keyboard
+                )
+
+            else:
+                keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+                keyboard.add(types.KeyboardButton('Назад'))
+
+                self.bot.send_message(
+                    message.chat.id,
+                    'Профиль занят',
+                    reply_markup=keyboard
+                )
 
         @self.bot.message_handler(func=lambda message: message.text == 'Выйти из профиля учителя')
         def sign_out_teacher(message):

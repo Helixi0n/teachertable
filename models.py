@@ -79,6 +79,16 @@ class Model:
             return True # Пользователь - админ
         else:
             return False # Пользователь не админ
+        
+    @staticmethod
+    def is_teacher_signed_in(teacher_name):
+        teacher = session.query(User).where(User.teacher == teacher_name).first()
+
+        if teacher:
+            return True
+        
+        else:
+            return False
 
     @staticmethod
     def get_not_signed_in_teacher_list():
