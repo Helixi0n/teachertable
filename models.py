@@ -35,31 +35,31 @@ class Model:
         return teacher.id # Поиск учителя
     
     @staticmethod
-    def sign_in_teacher(teacher_name, user_id): # Вход
+    def sign_in_teacher(teacher_name, user_id): # Вход в профиль учителя
         stmt = update(User).where(User.teacher == teacher_name).values(user_id=user_id)
         session.execute(stmt)
         session.commit()
         session.close()
 
     @staticmethod
-    def sign_in_admin(user_id):
+    def sign_in_admin(user_id): # Вход в профиль администратора
         admin = Admin(user_id=user_id)
         session.add(admin)
         session.commit()
-        session.close() # Вход в качестве администратора
+        session.close()
         
     @staticmethod
-    def sign_out_teacher(user_id):
+    def sign_out_teacher(user_id): # Выход из системы в главное меню
         stmt = update(User).where(User.user_id == user_id).values(user_id = 0)
         session.execute(stmt)
         session.commit()
-        session.close() # Выход из системы в главное меню
+        session.close()
 
     @staticmethod
-    def sign_out_admin(user_id):
+    def sign_out_admin(user_id): # Выход из системы в главное меню
         session.query(Admin).filter(Admin.user_id == user_id).delete()
         session.commit()
-        session.close() # Выход из системы в главное меню
+        session.close()
 
     @staticmethod
     def is_it_teacher(user_id):
@@ -84,11 +84,11 @@ class Model:
     def is_teacher_signed_in(teacher_name):
         teacher = session.query(User).where(User.teacher == teacher_name).first()
 
-        if teacher.user_id != 0 or not teacher:
-            return True
+        if teacher.user_id != 0:
+            return True # Кто-то зашел в профиль учителя
         
         else:
-            return False
+            return False # Профиль учителя свободен
 
     @staticmethod
     def get_not_signed_in_teacher_list():
@@ -196,5 +196,5 @@ class Model:
 
     @staticmethod
     def get_event(event_id):
-        event = session.query(Event).filter(Event.id == event_id).first()
+        event = session.query(Event).filter(Event.event_id == event_id).first()
         return (event.admin_id, event.text, event.reason) # Сведения о событии
