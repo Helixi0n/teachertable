@@ -447,7 +447,7 @@ class Controller:
 
                 self.bot.send_message(
                     message.chat.id,
-                    'Профиль занят',
+                    'Профиль занят илибыл удален',
                     reply_markup=keyboard
                 )
 

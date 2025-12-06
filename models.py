@@ -84,7 +84,7 @@ class Model:
     def is_teacher_signed_in(teacher_name):
         teacher = session.query(User).where(User.teacher == teacher_name).first()
 
-        if teacher.user_id != 0:
+        if teacher.user_id != 0 or not teacher:
             return True
         
         else:
