@@ -3,9 +3,6 @@ from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
-engine = create_engine('sqlite:///data.db')
-Session = sessionmaker(bind=engine)
-session = Session()
 BaseModel = declarative_base()
 
 class User(BaseModel): # База данных учителей
@@ -35,18 +32,22 @@ class Event(BaseModel): # База данных событий
     presence = Column(Boolean, default=True)
     reason = Column(Text, default=None)
 
-    teacher_id = Column(Integer, ForeignKey('user.user_id'), nullable=False)
-    admin_id = Column(Integer, ForeignKey('admin.user_id'), nullable=False)
+    # Исправлено: ссылаемся на первичный ключ пользователя
+    teacher_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    admin_id = Column(Integer, ForeignKey('admin.id'), nullable=False)
 
     teacher = relationship('User', back_populates='event')
 
 
+# Создаем engine один раз
+engine = create_engine('sqlite:///data.db', echo=False)
+Session = sessionmaker(bind=engine)
+
+
 def init_db():
-    engine = create_engine("sqlite:///data.db")
     BaseModel.metadata.create_all(engine)
 
+
 def get_connection():
-    engine = create_engine("sqlite:///data.db")
-    BaseModel.metadata.create_all(engine)
-    Session = sessionmaker(bind=engine)
+    """Создает и возвращает новую сессию"""
     return Session()

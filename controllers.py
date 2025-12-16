@@ -1,6 +1,6 @@
 from telebot import types, TeleBot
 from models import Model
-from notifications import Notification
+# from notifications import Notification  # Закомментировано, так как модуль не предоставлен
 
 teacher_states = {}
 admin_states = {}
@@ -15,6 +15,7 @@ ADD_DATE = 'add date'
 ADD_TEXT = 'add text'
 SIGN_IN_TEACHER = 'sign in teacher'
 
+
 class Controller:
     def __init__(self, bot):
         self.bot: TeleBot = bot
@@ -27,11 +28,11 @@ class Controller:
                     del admin_states[message.chat.id]
                 keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
                 buttons = [
-                types.KeyboardButton('Добавить учителя'),
-                types.KeyboardButton('Удалить учителя'),
-                types.KeyboardButton('Добавить мероприятие'),
-                types.KeyboardButton('Написать новость для учителей'),
-                types.KeyboardButton('Выйти из профиля администратора')
+                    types.KeyboardButton('Добавить учителя'),
+                    types.KeyboardButton('Удалить учителя'),
+                    types.KeyboardButton('Добавить мероприятие'),
+                    types.KeyboardButton('Написать новость для учителей'),
+                    types.KeyboardButton('Выйти из профиля администратора')
                 ]
                 keyboard.add(*buttons)
 
@@ -42,7 +43,7 @@ class Controller:
                 )
 
             elif Model.is_it_teacher(message.chat.id):
-                if  message.chat.id in teacher_states.keys():
+                if message.chat.id in teacher_states.keys():
                     del teacher_states[message.chat.id]
 
                 keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
@@ -55,7 +56,7 @@ class Controller:
 
                 self.bot.send_message(
                     message.chat.id,
-                    'Выберите дейстивие',
+                    'Выберите действие',
                     reply_markup=keyboard
                 )
 
@@ -68,11 +69,11 @@ class Controller:
                 keyboard.add(*buttons)
 
                 self.bot.send_message(
-                    message.chat.id,           
-                    f'Здравствуйте!\nВыберите свою роль:', 
+                    message.chat.id,
+                    f'Здравствуйте!\nВыберите свою роль:',
                     reply_markup=keyboard
-                    )
-            
+                )
+
         @self.bot.message_handler(func=lambda message: message.text == 'Назад')
         def main_menu(message):
             if Model.is_it_admin(message.chat.id):
@@ -80,11 +81,11 @@ class Controller:
                     del admin_states[message.chat.id]
                 keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
                 buttons = [
-                types.KeyboardButton('Добавить учителя'),
-                types.KeyboardButton('Удалить учителя'),
-                types.KeyboardButton('Добавить мероприятие'),
-                types.KeyboardButton('Написать новость для учителей'),
-                types.KeyboardButton('Выйти из профиля администратора')
+                    types.KeyboardButton('Добавить учителя'),
+                    types.KeyboardButton('Удалить учителя'),
+                    types.KeyboardButton('Добавить мероприятие'),
+                    types.KeyboardButton('Написать новость для учителей'),
+                    types.KeyboardButton('Выйти из профиля администратора')
                 ]
                 keyboard.add(*buttons)
 
@@ -95,7 +96,7 @@ class Controller:
                 )
 
             elif Model.is_it_teacher(message.chat.id):
-                if  message.chat.id in teacher_states.keys():
+                if message.chat.id in teacher_states.keys():
                     del teacher_states[message.chat.id]
 
                 keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
@@ -108,7 +109,7 @@ class Controller:
 
                 self.bot.send_message(
                     message.chat.id,
-                    'Выберите дейстивие',
+                    'Выберите действие',
                     reply_markup=keyboard
                 )
 
@@ -121,11 +122,11 @@ class Controller:
                 keyboard.add(*buttons)
 
                 self.bot.send_message(
-                    message.chat.id,           
-                    f'Здравствуйте!\nВыберите свою роль:', 
+                    message.chat.id,
+                    f'Здравствуйте!\nВыберите свою роль:',
                     reply_markup=keyboard
-                    )
-                
+                )
+
         @self.bot.message_handler(func=lambda message: message.text == 'Я администратор')
         def admin(message):
             Model.sign_in_admin(message.chat.id)
@@ -168,16 +169,16 @@ class Controller:
         @self.bot.message_handler(func=lambda message: admin_states.get(message.chat.id) == WRITE_NEWS and message.text != 'Назад')
         def send_news(message):
             news = message.text
-            Notification.send_news(self=self, text=news)
+            # Notification.send_news(self=self, text=news)  # Раскомментируйте, если используете уведомления
             keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
             keyboard.add(types.KeyboardButton('Назад'))
-            
+
             self.bot.send_message(
                 message.chat.id,
                 'Новость разослана',
                 reply_markup=keyboard
             )
-        
+
         @self.bot.message_handler(func=lambda message: message.text == 'Добавить учителя')
         def get_teacher_name(message):
             if Model.is_it_admin(message.chat.id):
@@ -203,7 +204,7 @@ class Controller:
             Model.add_teacher(message.text)
             keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
             keyboard.add(types.KeyboardButton('Назад'))
-            
+
             self.bot.send_message(
                 message.chat.id,
                 'Учитель добавлен',
@@ -224,7 +225,7 @@ class Controller:
 
                     keyboard.add(*buttons)
                     keyboard.add(types.KeyboardButton('Назад'))
-                    
+
                     self.bot.send_message(
                         message.chat.id,
                         'Выберите учителя:',
@@ -232,7 +233,7 @@ class Controller:
                     )
                 else:
                     keyboard.add(types.KeyboardButton('Назад'))
-                    
+
                     self.bot.send_message(
                         message.chat.id,
                         'Невозможно удалить учителя',
@@ -250,7 +251,7 @@ class Controller:
         def del_teacher(message):
             teacher_id = Model.get_teacher_by_name(message.text)
 
-            if Model.delete_teacher(teacher_id):
+            if teacher_id and Model.delete_teacher(teacher_id):
                 keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
                 keyboard.add(types.KeyboardButton('Назад'))
                 self.bot.send_message(
@@ -319,7 +320,7 @@ class Controller:
                     'Вы не являетесь администратором',
                     reply_markup=keyboard
                 )
-        
+
         @self.bot.message_handler(func=lambda message: admin_states.get(message.chat.id) == ADD_DATE and message.text != 'Назад')
         def add_event_text(message):
             keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
@@ -329,15 +330,15 @@ class Controller:
                     admin_states[message.chat.id] = ADD_TEXT
                     admin_list[message.chat.id].append(message.text)
                     self.bot.send_message(
-                    message.chat.id,
-                    'Напишите текст события',
-                    reply_markup=keyboard
+                        message.chat.id,
+                        'Напишите текст события',
+                        reply_markup=keyboard
                     )
                 else:
                     self.bot.send_message(
-                    message.chat.id,
-                    'Введен неправильный формат. Повторите попытку',
-                    reply_markup=keyboard
+                        message.chat.id,
+                        'Введен неправильный формат. Повторите попытку',
+                        reply_markup=keyboard
                     )
             else:
                 self.bot.send_message(
@@ -364,11 +365,17 @@ class Controller:
                 reply_markup=keyboard
             )
 
-            self.bot.send_message(
-                Model.get_teacher_by_name(teacher),
-                f'Вам было назначено событие {text}.\nДата и время: {date_time}',
-                reply_markup=keyboard
-            )
+            # Отправляем уведомление учителю
+            teacher_user_id = Model.get_teacher_by_name(teacher)
+            if teacher_user_id:
+                try:
+                    self.bot.send_message(
+                        teacher_user_id,
+                        f'Вам было назначено событие "{text}".\nДата и время: {date_time}',
+                        reply_markup=keyboard
+                    )
+                except Exception as e:
+                    print(f"Не удалось отправить сообщение учителю {teacher}: {e}")
 
         @self.bot.message_handler(func=lambda message: message.text == 'Выйти из профиля администратора')
         def sign_out_admin(message):
@@ -387,11 +394,11 @@ class Controller:
             keyboard.add(*buttons)
 
             self.bot.send_message(
-                message.chat.id,           
-                f'Здравствуйте!\nВыберите свою роль:', 
+                message.chat.id,
+                f'Здравствуйте!\nВыберите свою роль:',
                 reply_markup=keyboard
-                )
-            
+            )
+
         @self.bot.message_handler(func=lambda message: message.text == 'Я учитель')
         def sign_in_teacher(message):
             teacher_states[message.chat.id] = SIGN_IN_TEACHER
@@ -422,9 +429,9 @@ class Controller:
 
         @self.bot.message_handler(func=lambda message: teacher_states.get(message.chat.id) == SIGN_IN_TEACHER and message.text != 'Назад')
         def teacher(message):
-            if Model.is_teacher_signed_in(message.text) == False:
+            if not Model.is_teacher_signed_in(message.text):
                 Model.sign_in_teacher(message.text, message.chat.id)
-                if  message.chat.id in teacher_states.keys():
+                if message.chat.id in teacher_states.keys():
                     del teacher_states[message.chat.id]
 
                 keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
@@ -437,7 +444,7 @@ class Controller:
 
                 self.bot.send_message(
                     message.chat.id,
-                    'Выберите дейстивие',
+                    'Выберите действие',
                     reply_markup=keyboard
                 )
 
@@ -447,17 +454,17 @@ class Controller:
 
                 self.bot.send_message(
                     message.chat.id,
-                    'Профиль занят илибыл удален',
+                    'Профиль занят или был удален',
                     reply_markup=keyboard
                 )
 
         @self.bot.message_handler(func=lambda message: message.text == 'Выйти из профиля учителя')
         def sign_out_teacher(message):
-            if  message.chat.id in teacher_states.keys():
+            if message.chat.id in teacher_states.keys():
                 del teacher_states[message.chat.id]
 
             Model.sign_out_teacher(message.chat.id)
-            
+
             keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
             buttons = [
                 types.KeyboardButton('Я администратор'),
@@ -466,10 +473,10 @@ class Controller:
             keyboard.add(*buttons)
 
             self.bot.send_message(
-                message.chat.id,           
-                f'Здравствуйте!\nВыберите свою роль:', 
+                message.chat.id,
+                f'Здравствуйте!\nВыберите свою роль:',
                 reply_markup=keyboard
-                )
+            )
 
         @self.bot.message_handler(func=lambda message: message.text == 'Предстоящие события')
         def event_list(message):
@@ -480,9 +487,8 @@ class Controller:
                 msg = 'Список предстоящих событий: \n'
 
                 if event_list:
-                    for event in event_list:
-                        msg += f'{event[0]}: {event[1]}'
-
+                    for i, event in enumerate(event_list, 1):
+                        msg += f'{i}. {event[0]}: {event[1].strftime("%d.%m.%Y %H:%M")}\n'
                 else:
                     msg = 'Нет предстоящих событий'
 
@@ -508,9 +514,8 @@ class Controller:
                 msg = 'Список прошедших событий: \n'
 
                 if event_list:
-                    for event in event_list:
-                        msg += f'{event[0]}: {event[1]}'
-
+                    for i, event in enumerate(event_list, 1):
+                        msg += f'{i}. {event[0]}: {event[1].strftime("%d.%m.%Y %H:%M")}\n'
                 else:
                     msg = 'Нет прошедших событий'
 
@@ -530,8 +535,8 @@ class Controller:
         @self.bot.callback_query_handler(func=lambda callback: (callback.data.startswith('True') or callback.data.startswith('False')) and Model.is_it_teacher(callback.message.chat.id) == True)
         def presence(callback):
             if callback.data.startswith('True'):
-                event_id = callback.data.strip('True_')
-                Model.presence(event_id, callback.message.chat.id, True)
+                event_id = callback.data.replace('True_', '')
+                Model.presence(event_id, True)  # Исправлен вызов метода
 
                 keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
                 keyboard.add(types.KeyboardButton('Назад'))
@@ -541,11 +546,11 @@ class Controller:
                     f'Отлично',
                     reply_markup=keyboard
                 )
-            
+
             else:
-                event_id = callback.data.strip('False_')
+                event_id = callback.data.replace('False_', '')
                 presence_false[callback.message.chat.id] = event_id
-                Model.presence(event_id, callback.message.chat.id, False)
+                Model.presence(event_id, False)  # Исправлен вызов метода
 
                 self.bot.send_message(
                     callback.message.chat.id,
@@ -555,22 +560,35 @@ class Controller:
         @self.bot.message_handler()
         def reason(message):
             if message.chat.id in presence_false.keys():
-                Model.get_reason(presence_false[message.chat.id], message)
+                Model.get_reason(presence_false[message.chat.id], message.text)
 
                 keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
                 keyboard.add(types.KeyboardButton('Назад'))
-                teacher = Model.get_teacher(message.chat.id)
-                event = Model.get_event(presence_false[message.chat.id])
-                del presence_false[message.chat.id]
+                
+                teacher_name = Model.get_teacher(message.chat.id)  # Получаем имя учителя
+                event_info = Model.get_event(presence_false[message.chat.id])
+                
+                if event_info and teacher_name:
+                    admin_id, event_text, reason_text = event_info
+                    del presence_false[message.chat.id]
 
-                self.bot.send_message(
-                    message.chat.id,
-                    f'Хорошего дня',
-                    reply_markup=keyboard
-                )
+                    self.bot.send_message(
+                        message.chat.id,
+                        f'Хорошего дня',
+                        reply_markup=keyboard
+                    )
 
-                self.bot.send_message(
-                    event[0],
-                    f'{teacher} не сможет присутствовать на мероприятии {event[1]} по причине "{event[2]}"',
-                    reply_markup=keyboard
-                )
+                    try:
+                        self.bot.send_message(
+                            admin_id,
+                            f'{teacher_name} не сможет присутствовать на мероприятии "{event_text}" по причине: "{reason_text}"',
+                            reply_markup=keyboard
+                        )
+                    except Exception as e:
+                        print(f"Не удалось отправить сообщение администратору: {e}")
+                else:
+                    self.bot.send_message(
+                        message.chat.id,
+                        f'Произошла ошибка при обработке',
+                        reply_markup=keyboard
+                    )
