@@ -4,7 +4,7 @@ from notifications import Notification
 import threading
 from constants import TOKEN
 
-# Главный файл, запустить для начала работы бота
+# Главный файл, запустить для работы бота
 
 bot = TeleBot(TOKEN)
 controller = Controller(bot)
